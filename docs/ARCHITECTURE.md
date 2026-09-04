@@ -58,6 +58,12 @@ agent-safe response. See [the credential broker contract](CREDENTIAL_BROKER.md).
 8. Persist only normalized billing metadata and redacted outcome data.
 9. Return the normalized result to the agent.
 
+Issue #12 implements this sequence end to end for one controlled loopback
+provider. The browser installs exact-origin interception before page creation,
+tries encrypted session state first, scopes any credential to the validated
+login form, reconstructs connector output, and persists only normalized or
+redacted results. See [the synthetic check design](SYNTHETIC_CHECK.md).
+
 ## Backend strategy
 
 Start with a 1Password adapter behind a small `CredentialBackend` interface.

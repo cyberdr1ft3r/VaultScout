@@ -52,8 +52,13 @@ sanitized offline connector fixture harness, local SQLite subscription history,
 a validated domain-bound credential broker contract with a synthetic fake
 backend, a production local 1Password backend, a demo connector, and a CLI.
 
-The next deliverable is the brokered synthetic browser check in Issue #12. No
-real provider connector is implemented yet.
+The synthetic vertical slice now performs a complete brokered login, encrypted
+session reuse, normalized extraction, and redacted SQLite outcome flow using
+only a loopback provider and fake backend. See the
+[synthetic check design](docs/SYNTHETIC_CHECK.md).
+
+The next deliverable is Issue #13, selecting and implementing the first real
+read-only provider connector. No real provider connector is implemented yet.
 
 See [the credential broker contract](docs/CREDENTIAL_BROKER.md) for the
 agent-facing request, trusted backend boundary, exact-origin enforcement, and
@@ -91,10 +96,10 @@ Demo Cloud: renews 2026-10-01 — 9.99 EUR (active)
 
 ## Planned MVP
 
-1. 1Password-backed credential reference and local authorization flow
-2. Domain-bound browser login without an agent-visible secret channel
-3. One end-to-end, read-only subscription check
-4. Scheduled checks, renewal warnings, and a minimal local results view
+1. Select one real subscription provider
+2. Implement one fixture-driven read-only connector
+3. Exercise the provider through the brokered check flow
+4. Add scheduling, warnings, and a minimal local results view
 
 The project will reconsider additional vault backends only after this vertical
 slice works safely. See [the roadmap](docs/ROADMAP.md) for sequencing.

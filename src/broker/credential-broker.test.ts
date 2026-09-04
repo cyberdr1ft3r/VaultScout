@@ -366,7 +366,7 @@ describe("domain-bound credential broker", () => {
 
   it.each([
     ["BACKEND_UNAVAILABLE", "BACKEND_UNAVAILABLE"],
-    ["BACKEND_LOCKED", "AUTHORIZATION_DENIED"],
+    ["BACKEND_LOCKED", "INTERACTIVE_REQUIRED"],
     ["AUTHORIZATION_DENIED", "AUTHORIZATION_DENIED"],
     ["ITEM_NOT_FOUND", "CREDENTIAL_UNAVAILABLE"],
     ["VAULT_NOT_FOUND", "CREDENTIAL_UNAVAILABLE"],
@@ -376,7 +376,7 @@ describe("domain-bound credential broker", () => {
     ["OUTPUT_LIMIT_EXCEEDED", "BACKEND_UNAVAILABLE"],
     ["PROCESS_FAILED", "BACKEND_UNAVAILABLE"],
     ["CANCELLED", "REQUEST_CANCELLED"],
-    ["CONSUMER_FAILED", "CHECK_FAILED"],
+    ["CONSUMER_FAILED", "LOGIN_FAILED"],
   ] as const)("maps backend failure %s to redacted code %s", async (
     backendCode,
     brokerCode,
