@@ -144,6 +144,13 @@ class ExactOriginBrowserBoundary {
   }
 
   async install(): Promise<void> {
+    this.#context.on("request", (request) => {
+      try {
+        assertExactOrigin(request.url(), this.#allowedOrigin);
+      } catch {
+        this.#violation = true;
+      }
+    });
     await this.#context.route("**/*", async (route) => {
       const request = route.request();
       let allowed = false;
