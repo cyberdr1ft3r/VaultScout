@@ -63,5 +63,5 @@ At the start of a session, read this file and the open GitHub Issues. Select one
 - Completed: product rebaseline around an agent-safe credential broker; prior session-vault, fixture-harness, and persistence work remains part of the new architecture
 - Verified baseline: strict TypeScript check and all 58 tests passed at the last implementation handoff
 - Deferred: the dashboard until an end-to-end brokered subscription check exists
-- Resume with exactly: implement the one-credential, one-domain 1Password broker proof of concept using a fake credential backend in tests and no secret-returning API
+- Resume with exactly: Issue #10, the domain-bound credential broker contract with a fake backend and no secret-returning API
 - Blocked on: confirming the supported 1Password local integration during implementation; real provider selection comes after the synthetic vertical slice
