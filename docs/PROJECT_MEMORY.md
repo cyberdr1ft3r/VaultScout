@@ -63,7 +63,7 @@ At the start of a session, read this file and the open GitHub Issues. Select one
 
 - Date: 2026-09-04
 - Completed: Issue #11 Windows-first local 1Password backend with fixed trusted identifiers, Windows Hello/desktop integration, bounded no-shell process execution, private CLI failure classification, cancellation, and callback-scoped output
-- Verification: pending strict type check, complete tests, audit, diff check, and synthetic marker scans
+- Verification: strict TypeScript check and all 150 tests pass (37 adapter, 11 process-runner, 44 broker, plus all existing suites); diff check and production audit pass; the complete synthetic credential marker is absent from tracked files and captured test output
 - Deferred: the dashboard until an end-to-end brokered subscription check exists
 - Limitations: no browser-filling flow; JavaScript cannot guarantee secure memory zeroing; trusted configuration is programmatic; CLI stderr has no stable condition-specific exit-code contract; no user-approved Windows smoke test was performed
 - Resume with exactly: Issue #12, implement the brokered synthetic subscription check and controlled browser-filling flow
