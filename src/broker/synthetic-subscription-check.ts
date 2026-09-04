@@ -5,7 +5,6 @@ import {
   type CredentialBackend,
 } from "./credential-backend.js";
 import {
-  type BrokerFailureCode,
   createCredentialBroker,
   type CredentialBroker,
   type TrustedSubscriptionCheckContext,
@@ -176,7 +175,7 @@ function persistenceOutcome(error: unknown): {
   return { outcome: "failed", failureCode: "UNKNOWN_FAILURE" };
 }
 
-function publicFailure(error: unknown): BrokerFailureCode {
+function publicFailure(error: unknown) {
   if (error instanceof ControlledBrowserFailure) {
     return error.code;
   }

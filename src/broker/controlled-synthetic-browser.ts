@@ -168,9 +168,8 @@ class ExactOriginBrowserBoundary {
     await this.#context.routeWebSocket(/.*/u, () => {
       this.#violation = true;
     });
-    this.#context.on("serviceworker", (worker) => {
+    this.#context.on("serviceworker", () => {
       this.#violation = true;
-      void worker.close().catch(() => undefined);
     });
     this.#context.on("page", (page) => {
       if (this.#page && page !== this.#page) {
@@ -246,6 +245,7 @@ class ExactOriginBrowserBoundary {
   ): Promise<void> {
     this.assertSafe(page);
     this.#loginSubmissionUrl = action;
+    let submitFailed = false;
     try {
       await Promise.all([
         page.waitForNavigation({ waitUntil: "domcontentloaded" }),
@@ -260,8 +260,14 @@ class ExactOriginBrowserBoundary {
           node.submit();
         }, action),
       ]);
+    } catch {
+      submitFailed = true;
     } finally {
       this.#loginSubmissionUrl = undefined;
+    }
+    if (submitFailed) {
+      this.assertSafe(page);
+      throw new ControlledBrowserFailure("LOGIN_FAILED");
     }
     this.assertSafe(page);
   }

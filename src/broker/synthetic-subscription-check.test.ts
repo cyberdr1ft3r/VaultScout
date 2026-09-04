@@ -700,7 +700,10 @@ describe("exact-origin controlled browser", () => {
     ["cross_form", "sibling hostname"],
     ["scheme_form", "scheme"],
     ["port_form", "port"],
-  ] as const)("rejects %s mismatch in login form action", async (login) => {
+  ] as const)("rejects %s mismatch in login form action", async (
+    login,
+    _description,
+  ) => {
     const values = await setup({ server: { login } });
 
     await expect(
