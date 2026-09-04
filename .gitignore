@@ -1,0 +1,11 @@
+node_modules/
+dist/
+coverage/
+.env
+.env.*
+!.env.example
+.subwatch/
+auth.json
+storage-state.json
+*.log
+.DS_Store
