@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "id": "synthetic-cloud-changed",
+  "description": "A hand-written summary with one intentionally changed selector.",
+  "html": "<main data-subwatch-fixture=\"synthetic\"><h1 data-field=\"provider-name\">Synthetic Cloud Changed</h1><span data-field=\"provider-id\">synthetic-cloud-changed</span><section><strong data-field=\"plan-name\">Fixture Basic</strong><time data-field=\"renewal-day\">2030-01-15</time><span data-field=\"amount\">USD 19.95</span><span data-field=\"billing-cycle\">monthly</span><span data-field=\"status\">active</span></section></main>",
+  "expectation": {
+    "outcome": "error",
+    "code": "CONNECTOR_EXTRACTION_FAILED"
+  }
+}

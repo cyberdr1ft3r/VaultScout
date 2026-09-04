@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "id": "synthetic-cloud",
+  "description": "A hand-written deterministic billing summary for harness tests.",
+  "html": "<main data-subwatch-fixture=\"synthetic\"><h1 data-field=\"provider-name\">Synthetic Cloud</h1><span data-field=\"provider-id\">synthetic-cloud</span><section><strong data-field=\"plan-name\">Fixture Basic</strong><time data-field=\"renewal-date\">2030-01-15</time><span data-field=\"amount\">USD 19.95</span><span data-field=\"billing-cycle\">monthly</span><span data-field=\"status\">active</span></section></main>",
+  "expectation": {
+    "outcome": "subscription",
+    "subscription": {
+      "providerId": "synthetic-cloud",
+      "providerName": "Synthetic Cloud",
+      "planName": "Fixture Basic",
+      "renewalDate": "2030-01-15",
+      "amountMinor": 1995,
+      "currency": "USD",
+      "billingCycle": "monthly",
+      "status": "active",
+      "checkedAt": "2030-01-01T00:00:00.000Z"
+    }
+  }
+}
