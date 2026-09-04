@@ -34,7 +34,8 @@ opening the password vault. Expired sessions fall back to an authorized login.
   hold a credential briefly in memory while filling an approved login form.
 - Every credential binding is restricted to an explicit HTTPS origin and
   account. Redirects do not expand that authority.
-- The default capability is login plus read-only billing inspection.
+- The only agent capability is `check_subscription`; credential use remains
+  internal to that trusted read-only flow.
 - Purchases, cancellations, plan changes, payment-method changes, account
   changes, secret export, and MFA/CAPTCHA bypass are denied.
 - Reusable browser sessions are encrypted and live only in `.vaultscout/`, which is ignored by Git.
@@ -48,11 +49,15 @@ before changing the authentication boundary.
 The existing foundation includes a typed connector contract, an encrypted
 browser-session vault, generic interactive Playwright authentication, a
 sanitized offline connector fixture harness, local SQLite subscription history,
-a demo connector, and a CLI.
+a validated domain-bound credential broker contract with a synthetic fake
+backend, a demo connector, and a CLI.
 
-The next deliverable is a one-credential, one-domain 1Password broker proof of
-concept. No real password-manager integration or provider connector is
-implemented yet.
+The next deliverable is the local 1Password adapter in Issue #11. No real
+password-manager integration or provider connector is implemented yet.
+
+See [the credential broker contract](docs/CREDENTIAL_BROKER.md) for the
+agent-facing request, trusted backend boundary, exact-origin enforcement, and
+JavaScript memory limitations.
 
 The session vault stores its encryption key in Windows Credential Manager,
 macOS Keychain, or Linux Secret Service and fails closed if that store is
