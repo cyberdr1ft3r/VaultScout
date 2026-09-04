@@ -45,7 +45,7 @@ At the start of a session, read this file and the open GitHub Issues. Select one
 
 - Date: 2026-09-04
 - Completed: Issue #3 session-vault foundation with OS-keyring-backed encryption, atomic writes, restrictive permissions, lifecycle states, and generic interactive login capture
-- Verified: strict TypeScript check and all 8 tests pass, including a synthetic local-page Playwright authentication test
+- Verified: strict TypeScript check and all 13 tests pass, including secure login URL policy and synthetic local-page Playwright authentication tests
 - Limitations: no real provider connector or CLI login command; Playwright browser binaries must be installed; Linux requires an unlocked Secret Service; same-user malware remains outside the encryption threat model
 - Resume with exactly: GitHub Issue #2, implement the sanitized connector fixture harness and its safety checks
 - Blocked on after Issue #2: user choosing the first three subscription providers
