@@ -6,6 +6,7 @@ import type {
 export interface CredentialUseRequest {
   itemReference: CredentialItemReference;
   allowedOrigin: string;
+  signal?: AbortSignal;
 }
 
 export type EphemeralPasswordConsumer = (
@@ -27,9 +28,18 @@ export interface CredentialBackend {
 
 export type CredentialBackendFailureCode =
   | "BACKEND_UNAVAILABLE"
+  | "BACKEND_LOCKED"
   | "AUTHORIZATION_DENIED"
   | "ITEM_NOT_FOUND"
-  | "ORIGIN_MISMATCH";
+  | "VAULT_NOT_FOUND"
+  | "FIELD_NOT_FOUND"
+  | "ORIGIN_MISMATCH"
+  | "MALFORMED_OUTPUT"
+  | "PROCESS_TIMEOUT"
+  | "OUTPUT_LIMIT_EXCEEDED"
+  | "PROCESS_FAILED"
+  | "CANCELLED"
+  | "CONSUMER_FAILED";
 
 export class CredentialBackendFailure extends Error {
   constructor(readonly code: CredentialBackendFailureCode) {

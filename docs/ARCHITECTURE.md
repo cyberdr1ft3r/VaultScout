@@ -66,6 +66,12 @@ item reference and origin binding. The adapter must use a supported local
 1Password integration and must fail closed when the desktop app is locked,
 authorization is denied, or the target origin differs.
 
+Issue #11 implements that adapter with the official desktop-integrated CLI. It
+invokes one fixed `op read` secret reference by account, vault, item, and field
+ID using a bounded no-shell child process. Credential bytes remain
+callback-scoped inside the trusted process and no CLI operation is exposed to
+the agent.
+
 Bitwarden may be added later behind the same interface. Supporting a second
 backend is not part of the first vertical slice.
 

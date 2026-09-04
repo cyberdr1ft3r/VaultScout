@@ -45,9 +45,10 @@ agent-facing response is reconstructed from a strict schema and contains only
 a completed status or a stable redacted failure code. Unexpected exception
 messages and additional response properties are discarded.
 
-Issue #10 provides a synthetic fake backend only. The real local 1Password
-adapter is Issue #11, and the controlled browser-filling vertical slice is
-Issue #12.
+Issue #10 provides the contract and synthetic fake backend. Issue #11 adds the
+production `one_password` backend using the signed local CLI and desktop-app
+authorization. The controlled browser-filling vertical slice remains Issue
+#12. See [the 1Password integration guide](ONE_PASSWORD.md).
 
 ## Secret lifetime limitation
 

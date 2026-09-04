@@ -21,6 +21,7 @@ export type BrokerFailureCode =
   | "AUTHORIZATION_DENIED"
   | "CREDENTIAL_UNAVAILABLE"
   | "ORIGIN_MISMATCH"
+  | "REQUEST_CANCELLED"
   | "CHECK_FAILED";
 
 export interface CheckSubscriptionRequest {
@@ -52,6 +53,7 @@ export interface TrustedSubscriptionCheckContext {
   usePasswordForObservedUrl(
     observedUrl: string,
     consume: EphemeralPasswordConsumer,
+    signal?: AbortSignal,
   ): Promise<void>;
 }
 
@@ -110,13 +112,25 @@ function failure(failureCode: BrokerFailureCode): CheckSubscriptionResponse {
 function mapBackendFailure(error: CredentialBackendFailure): BrokerFailureCode {
   switch (error.code) {
     case "AUTHORIZATION_DENIED":
+    case "BACKEND_LOCKED":
       return "AUTHORIZATION_DENIED";
     case "ORIGIN_MISMATCH":
       return "ORIGIN_MISMATCH";
     case "BACKEND_UNAVAILABLE":
       return "BACKEND_UNAVAILABLE";
     case "ITEM_NOT_FOUND":
+    case "VAULT_NOT_FOUND":
+    case "FIELD_NOT_FOUND":
+    case "MALFORMED_OUTPUT":
       return "CREDENTIAL_UNAVAILABLE";
+    case "PROCESS_TIMEOUT":
+    case "OUTPUT_LIMIT_EXCEEDED":
+    case "PROCESS_FAILED":
+      return "BACKEND_UNAVAILABLE";
+    case "CANCELLED":
+      return "REQUEST_CANCELLED";
+    case "CONSUMER_FAILED":
+      return "CHECK_FAILED";
   }
 }
 
@@ -143,6 +157,7 @@ class BoundSubscriptionCheckContext
   async usePasswordForObservedUrl(
     observedUrl: string,
     consume: EphemeralPasswordConsumer,
+    signal?: AbortSignal,
   ): Promise<void> {
     if (!originMatchesBinding(observedUrl, this.#binding.allowedOrigin)) {
       this.#credentialFailure = "ORIGIN_MISMATCH";
@@ -150,11 +165,18 @@ class BoundSubscriptionCheckContext
     }
 
     try {
+      const request = signal
+        ? Object.freeze({
+            itemReference: this.#binding.itemReference,
+            allowedOrigin: this.#binding.allowedOrigin,
+            signal,
+          })
+        : Object.freeze({
+            itemReference: this.#binding.itemReference,
+            allowedOrigin: this.#binding.allowedOrigin,
+          });
       await this.#backend.usePassword(
-        Object.freeze({
-          itemReference: this.#binding.itemReference,
-          allowedOrigin: this.#binding.allowedOrigin,
-        }),
+        request,
         async (password) => {
           await consume(password);
         },
@@ -163,7 +185,7 @@ class BoundSubscriptionCheckContext
       const failureCode =
         error instanceof CredentialBackendFailure
           ? mapBackendFailure(error)
-          : "CREDENTIAL_UNAVAILABLE";
+          : "BACKEND_UNAVAILABLE";
       this.#credentialFailure = failureCode;
       throw new CredentialBackendFailure(
         error instanceof CredentialBackendFailure

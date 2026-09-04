@@ -50,14 +50,21 @@ The existing foundation includes a typed connector contract, an encrypted
 browser-session vault, generic interactive Playwright authentication, a
 sanitized offline connector fixture harness, local SQLite subscription history,
 a validated domain-bound credential broker contract with a synthetic fake
-backend, a demo connector, and a CLI.
+backend, a production local 1Password backend, a demo connector, and a CLI.
 
-The next deliverable is the local 1Password adapter in Issue #11. No real
-password-manager integration or provider connector is implemented yet.
+The next deliverable is the brokered synthetic browser check in Issue #12. No
+real provider connector is implemented yet.
 
 See [the credential broker contract](docs/CREDENTIAL_BROKER.md) for the
 agent-facing request, trusted backend boundary, exact-origin enforcement, and
 JavaScript memory limitations.
+
+The 1Password backend currently targets Windows 11. It requires the current
+1Password desktop app, the official `op` CLI on `PATH`, Windows Hello enabled,
+and **Settings → Developer → Integrate with 1Password CLI**. Use a dedicated
+`AI Access` vault containing only the configured login. See the
+[1Password integration guide](docs/ONE_PASSWORD.md) before local setup or
+manual testing.
 
 The session vault stores its encryption key in Windows Credential Manager,
 macOS Keychain, or Linux Secret Service and fails closed if that store is
