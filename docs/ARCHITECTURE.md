@@ -38,6 +38,12 @@ The first implementation supports exactly:
 The agent receives a normalized subscription result or a redacted failure code.
 There is no API that returns a password, OTP, cookie, storage state, or raw HTML.
 
+Issue #10 establishes the contract boundary: the agent supplies only an opaque
+account reference and `check_subscription`; trusted configuration resolves the
+backend, item reference, and exact origin. Backend credential use is
+callback-scoped and its result is discarded before the broker reconstructs an
+agent-safe response. See [the credential broker contract](CREDENTIAL_BROKER.md).
+
 ## Login and check flow
 
 1. Resolve the configured account binding to an allowed origin and opaque

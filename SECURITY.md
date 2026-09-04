@@ -19,6 +19,11 @@ held by a password manager. It must be treated as sensitive local software.
 - Automated tests must use fake credential backends and synthetic values that
   are blocked from logs and snapshots.
 
+The implemented policy and interface boundary is documented in
+[the credential broker contract](docs/CREDENTIAL_BROKER.md). JavaScript memory
+cannot be reliably zeroed; VaultScout limits secret lifetime and visibility but
+does not claim secure in-memory erasure.
+
 ## Connector rules
 
 Connectors must remain read-only. They may navigate to billing pages and extract subscription metadata. They must not submit purchases, cancellations, plan changes, payment methods, passwords, recovery codes, or MFA values.
