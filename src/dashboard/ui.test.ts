@@ -24,6 +24,10 @@ async function expectVisible(locator: Locator): Promise<void> {
   expect(await locator.isVisible()).toBe(true);
 }
 
+async function expectHidden(locator: Locator): Promise<void> {
+  expect(await locator.isVisible()).toBe(false);
+}
+
 async function expectContainsText(
   locator: Locator,
   expected: string,
@@ -144,6 +148,9 @@ describe("local dashboard UI", () => {
 
     await page.goto(dashboard.origin);
     await expectVisible(page.locator("#dashboard-content"));
+    await expectHidden(page.locator("#loading-state"));
+    await expectHidden(page.locator("#error-state"));
+    await expectHidden(page.locator("#warning-empty"));
     expect(await page.locator("#metric-active").textContent()).toBe("1");
     expect(await page.locator("#metric-seven").textContent()).toBe("1");
     expect(await page.locator("#metric-reauth").textContent()).toBe("1");
@@ -197,6 +204,8 @@ describe("local dashboard UI", () => {
     await expectVisible(page.locator("#loading-state"));
     await navigation;
     await expectVisible(page.locator("#dashboard-content"));
+    await expectHidden(page.locator("#loading-state"));
+    await expectHidden(page.locator("#error-state"));
     expect(await page.locator("#metric-active").textContent()).toBe("0");
     await expectVisible(page.locator("#warning-empty"));
     await expectVisible(page.locator("#renewal-empty"));
@@ -229,6 +238,8 @@ describe("local dashboard UI", () => {
 
     await page.goto(dashboard.origin);
     await expectVisible(page.locator("#error-state"));
+    await expectHidden(page.locator("#loading-state"));
+    await expectHidden(page.locator("#dashboard-content"));
     expect(await page.locator("body").textContent()).not.toContain(
       internalDetail,
     );
