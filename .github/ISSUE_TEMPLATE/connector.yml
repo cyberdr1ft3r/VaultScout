@@ -1,0 +1,31 @@
+name: Provider connector
+description: Add a read-only subscription provider connector
+title: "connector: "
+body:
+  - type: input
+    id: provider
+    attributes:
+      label: Provider
+    validations:
+      required: true
+  - type: textarea
+    id: billing_fields
+    attributes:
+      label: Required billing fields
+      value: "Plan, renewal date, amount, currency, billing cycle, and status."
+    validations:
+      required: true
+  - type: textarea
+    id: auth
+    attributes:
+      label: Authentication behavior
+      description: Describe first login, reusable session, MFA, and expired-session behavior without including secrets.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      placeholder: "- [ ] Uses sanitized fixtures\n- [ ] Performs no billing mutation"
+    validations:
+      required: true
