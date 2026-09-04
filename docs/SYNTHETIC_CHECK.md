@@ -56,7 +56,8 @@ Request and WebSocket routing is installed before the first page is created.
 Service workers are disabled. The context:
 
 - permits HTTP(S) requests only to the configured exact origin;
-- permits only GET/HEAD except for one validated same-origin login POST;
+- permits only GET/HEAD except for one validated POST to the fixed synthetic
+  `/session` action;
 - blocks sibling domains, scheme changes, port changes, external resources,
   popups, WebSockets, unsafe schemes, and every child frame;
 - checks the origin on navigation, before credential retrieval, before form

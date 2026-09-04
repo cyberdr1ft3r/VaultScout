@@ -48,7 +48,7 @@ handle a recovery secret.
 The controlled browser installs request interception before creating a page,
 disables service workers, rejects child frames and popups, and restricts
 traffic to the credential binding's exact origin. Only GET/HEAD and one
-validated same-origin login POST are allowed. Origin and form action are
+validated POST to the provider's fixed login action are allowed. Origin and form action are
 rechecked before credential retrieval, filling, submission, session capture,
 and connector extraction. See [the synthetic check design](docs/SYNTHETIC_CHECK.md).
 

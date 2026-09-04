@@ -134,6 +134,7 @@ async function detectInteractiveBoundary(page: Page): Promise<void> {
 class ExactOriginBrowserBoundary {
   readonly #context: BrowserContext;
   readonly #allowedOrigin: string;
+  readonly #expectedLoginAction: string;
   #page: Page | undefined;
   #violation = false;
   #loginSubmissionUrl: string | undefined;
@@ -141,6 +142,7 @@ class ExactOriginBrowserBoundary {
   constructor(context: BrowserContext, allowedOrigin: string) {
     this.#context = context;
     this.#allowedOrigin = allowedOrigin;
+    this.#expectedLoginAction = `${allowedOrigin}/session`;
   }
 
   async install(): Promise<void> {
@@ -232,6 +234,9 @@ class ExactOriginBrowserBoundary {
       return node.action;
     });
     const parsed = assertExactOrigin(action, this.#allowedOrigin);
+    if (parsed.href !== this.#expectedLoginAction) {
+      throw new ControlledBrowserFailure("LOGIN_FAILED");
+    }
     return { form, action: parsed.href };
   }
 

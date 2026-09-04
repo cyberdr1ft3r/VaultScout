@@ -67,6 +67,7 @@ type LoginMode =
   | "redirect_before"
   | "cross_form"
   | "sibling_form"
+  | "same_origin_mutation"
   | "scheme_form"
   | "unsafe_scheme"
   | "port_form"
@@ -167,13 +168,15 @@ async function startSyntheticServer(
             ? `${alternateOrigin}/session`
             : mode === "sibling_form"
               ? `http://sibling.localhost:${port}/session`
-              : mode === "scheme_form"
-                ? `https://127.0.0.1:${port}/session`
-                : mode === "unsafe_scheme"
-                  ? "data:text/plain,blocked"
-                  : mode === "port_form"
-                    ? `http://127.0.0.1:${port + 1}/session`
-                    : `${origin}/session`;
+              : mode === "same_origin_mutation"
+                ? `${origin}/account-change`
+                : mode === "scheme_form"
+                  ? `https://127.0.0.1:${port}/session`
+                  : mode === "unsafe_scheme"
+                    ? "data:text/plain,blocked"
+                    : mode === "port_form"
+                      ? `http://127.0.0.1:${port + 1}/session`
+                      : `${origin}/session`;
         const frame =
           mode === "unsafe_iframe"
             ? '<iframe src="/synthetic-frame"></iframe>'
@@ -491,6 +494,23 @@ describe("brokered synthetic subscription check", () => {
     expect(response.outcome).toBe("completed");
     expect(values.backend.safeSnapshot().useAttempts).toBe(1);
     expect(values.syntheticServer.requests).toContain("POST /session");
+  });
+
+  it("rejects an unexpected same-origin form action", async () => {
+    const values = await setup({
+      server: { login: "same_origin_mutation" },
+    });
+
+    await expect(
+      values.broker.checkSubscription(request()),
+    ).resolves.toEqual({
+      outcome: "failed",
+      failureCode: "LOGIN_FAILED",
+    });
+    expect(values.backend.safeSnapshot().useAttempts).toBe(0);
+    expect(values.syntheticServer.requests).not.toContain(
+      "POST /account-change",
+    );
   });
 
   it("fails safely on a corrupt encrypted session", async () => {
