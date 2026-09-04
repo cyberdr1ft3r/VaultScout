@@ -30,6 +30,7 @@ Build a local-first application that checks authenticated subscription billing p
 ## Security invariants
 
 - Never accept or store plaintext passwords.
+- Provider login URLs require HTTPS; HTTP is limited to explicit loopback hosts for synthetic tests.
 - Never log secrets, cookies, tokens, full authenticated HTML, or sensitive screenshots.
 - Session state stays under `.subwatch/` and must remain ignored by Git.
 - MFA and CAPTCHA require interactive user involvement.

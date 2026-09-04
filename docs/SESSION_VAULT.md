@@ -5,6 +5,12 @@ account passwords. Login happens in a headed provider page. After the connector
 confirms that login succeeded, SubWatch captures Playwright's cookies and web
 storage and immediately encrypts them for later read-only checks.
 
+Provider login URLs must use HTTPS. Plaintext HTTP is accepted only when the
+URL hostname is exactly `localhost`, `127.0.0.1`, or `::1`, which supports
+synthetic local-page tests without allowing remote credentials or session data
+to cross an unencrypted connection. URLs containing embedded credentials are
+also rejected. Rejections use the same generic, redacted authentication error.
+
 ## Encryption and key storage
 
 - Each configured SubWatch data directory has a random 256-bit vault key.

@@ -29,14 +29,46 @@ export interface InteractiveAuthenticationOptions {
   launchBrowser?: () => Promise<Browser>;
 }
 
+const LOOPBACK_HTTP_HOSTNAMES = new Set([
+  "localhost",
+  "127.0.0.1",
+  "[::1]",
+]);
+
+function parsePermittedLoginUrl(value: string): URL | undefined {
+  try {
+    const url = new URL(value);
+    if (url.username || url.password) {
+      return undefined;
+    }
+    if (url.protocol === "https:") {
+      return url;
+    }
+    if (
+      url.protocol === "http:" &&
+      LOOPBACK_HTTP_HOSTNAMES.has(url.hostname)
+    ) {
+      return url;
+    }
+  } catch {
+    return undefined;
+  }
+
+  return undefined;
+}
+
+export function isPermittedInteractiveLoginUrl(value: string): boolean {
+  return parsePermittedLoginUrl(value) !== undefined;
+}
+
 export async function authenticateInteractively(
   options: InteractiveAuthenticationOptions,
 ): Promise<SessionMetadata> {
   let browser: Browser | undefined;
 
   try {
-    const loginUrl = new URL(options.loginUrl);
-    if (loginUrl.protocol !== "https:" && loginUrl.protocol !== "http:") {
+    const loginUrl = parsePermittedLoginUrl(options.loginUrl);
+    if (!loginUrl) {
       throw new Error("Unsupported login URL.");
     }
 

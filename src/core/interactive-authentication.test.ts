@@ -4,7 +4,11 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { chromium } from "playwright";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { authenticateInteractively } from "./interactive-authentication.js";
+import {
+  authenticateInteractively,
+  InteractiveAuthenticationError,
+  isPermittedInteractiveLoginUrl,
+} from "./interactive-authentication.js";
 import type { SessionKeyProvider } from "./session-key-provider.js";
 import { SessionVault } from "./session-vault.js";
 
@@ -17,6 +21,59 @@ const html = `<!doctype html>
     document.body.dataset.authenticated = "true";
   });
 </script>`;
+
+describe("interactive authentication URL policy", () => {
+  it("allows HTTPS provider URLs", () => {
+    expect(
+      isPermittedInteractiveLoginUrl(
+        "https://accounts.example.invalid/login",
+      ),
+    ).toBe(true);
+  });
+
+  it.each([
+    "http://localhost:3000/login",
+    "http://127.0.0.1:3000/login",
+    "http://[::1]:3000/login",
+  ])("allows synthetic loopback HTTP URL %s", (loginUrl) => {
+    expect(isPermittedInteractiveLoginUrl(loginUrl)).toBe(true);
+  });
+
+  it("rejects remote HTTP before launching a browser with a redacted error", async () => {
+    let browserLaunchAttempted = false;
+    const vault = new SessionVault("/unused", {
+      keyProvider: {
+        async getKey() {
+          return Buffer.alloc(32, 9);
+        },
+      },
+    });
+
+    const failure = await authenticateInteractively({
+      browserType: chromium,
+      loginUrl: "http://accounts.example.invalid/login",
+      session: {
+        providerId: "synthetic-provider",
+        accountId: "synthetic-account",
+      },
+      expiresAt: new Date("2030-01-01T00:00:00.000Z"),
+      vault,
+      async launchBrowser() {
+        browserLaunchAttempted = true;
+        throw new Error("Browser should not launch.");
+      },
+      async waitForAuthenticated() {},
+    }).catch((error: unknown) => error);
+
+    expect(browserLaunchAttempted).toBe(false);
+    expect(failure).toBeInstanceOf(InteractiveAuthenticationError);
+    expect(failure).toMatchObject({
+      code: "INTERACTIVE_AUTHENTICATION_FAILED",
+      message: "Interactive authentication did not complete.",
+    });
+    expect(String(failure)).not.toContain("accounts.example.invalid");
+  });
+});
 
 describe("authenticateInteractively", () => {
   const server = createServer((_request, response) => {
