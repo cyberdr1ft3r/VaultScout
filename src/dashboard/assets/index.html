@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    <title>SubWatch — Renewal overview</title>
+    <link rel="stylesheet" href="/styles.css">
+    <script src="/app.js" defer></script>
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="Dashboard navigation">
+        <a class="brand" href="/" aria-label="SubWatch overview">
+          <span class="brand-mark" aria-hidden="true">S</span>
+          <span>SubWatch</span>
+        </a>
+        <nav>
+          <a class="nav-item active" href="#overview">
+            <span class="nav-dot" aria-hidden="true"></span>
+            Overview
+          </a>
+          <a class="nav-item" href="#renewals">
+            <span class="nav-dot" aria-hidden="true"></span>
+            Renewals
+          </a>
+          <a class="nav-item" href="#history">
+            <span class="nav-dot" aria-hidden="true"></span>
+            Check history
+          </a>
+        </nav>
+        <div class="local-status">
+          <span class="status-indicator" aria-hidden="true"></span>
+          <span>
+            <strong>Local only</strong>
+            <small>Read-only dashboard</small>
+          </span>
+        </div>
+      </aside>
+
+      <main class="main-content">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">Renewal intelligence</p>
+            <h1>Subscription overview</h1>
+            <p class="subtitle">Upcoming payments and connector health, stored on this device.</p>
+          </div>
+          <button id="refresh-button" class="secondary-button" type="button">
+            Refresh
+          </button>
+        </header>
+
+        <section id="loading-state" class="state-panel" aria-live="polite">
+          <span class="spinner" aria-hidden="true"></span>
+          <div>
+            <strong>Loading your local data</strong>
+            <p>Reading normalized subscription history.</p>
+          </div>
+        </section>
+
+        <section id="error-state" class="state-panel error-panel" hidden aria-live="assertive">
+          <span class="state-icon" aria-hidden="true">!</span>
+          <div>
+            <strong>Dashboard data is unavailable</strong>
+            <p>Your private data was not exposed. Try refreshing the page.</p>
+          </div>
+        </section>
+
+        <div id="dashboard-content" hidden>
+          <section id="overview" aria-labelledby="summary-heading">
+            <div class="section-heading">
+              <div>
+                <p class="eyebrow">At a glance</p>
+                <h2 id="summary-heading">Renewal summary</h2>
+              </div>
+              <time id="summary-as-of" class="as-of"></time>
+            </div>
+            <div class="metric-grid">
+              <article class="metric-card">
+                <span class="metric-label">Active subscriptions</span>
+                <strong id="metric-active" class="metric-value">—</strong>
+                <span class="metric-note neutral">Current latest state</span>
+              </article>
+              <article class="metric-card">
+                <span class="metric-label">Renewals in 7 days</span>
+                <strong id="metric-seven" class="metric-value">—</strong>
+                <span class="metric-note accent">Immediate horizon</span>
+              </article>
+              <article class="metric-card">
+                <span class="metric-label">Renewals in 30 days</span>
+                <strong id="metric-thirty" class="metric-value">—</strong>
+                <span class="metric-note neutral">Planning horizon</span>
+              </article>
+              <article class="metric-card">
+                <span class="metric-label">Reauthentication</span>
+                <strong id="metric-reauth" class="metric-value">—</strong>
+                <span class="metric-note warning">Needs attention</span>
+              </article>
+              <article class="metric-card">
+                <span class="metric-label">Recent failures</span>
+                <strong id="metric-failures" class="metric-value">—</strong>
+                <span class="metric-note warning">Last 7 days</span>
+              </article>
+            </div>
+          </section>
+
+          <section id="warnings" class="section-block" aria-labelledby="warnings-heading">
+            <div class="section-heading">
+              <div>
+                <p class="eyebrow">Attention</p>
+                <h2 id="warnings-heading">Warnings</h2>
+              </div>
+            </div>
+            <div id="warning-grid" class="warning-grid"></div>
+            <div id="warning-empty" class="compact-empty" hidden>
+              <span class="success-check" aria-hidden="true">✓</span>
+              No current warnings. Connector health looks good.
+            </div>
+          </section>
+
+          <section id="renewals" class="section-block" aria-labelledby="renewals-heading">
+            <div class="section-heading">
+              <div>
+                <p class="eyebrow">Schedule</p>
+                <h2 id="renewals-heading">Upcoming renewals</h2>
+              </div>
+              <span id="renewal-count" class="count-badge"></span>
+            </div>
+            <div id="renewal-table-wrap" class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Provider</th>
+                    <th>Plan</th>
+                    <th>Renews</th>
+                    <th>Amount</th>
+                    <th>Cycle</th>
+                    <th>Status</th>
+                    <th>Last check</th>
+                  </tr>
+                </thead>
+                <tbody id="renewal-rows"></tbody>
+              </table>
+            </div>
+            <div id="renewal-empty" class="empty-state" hidden>
+              <span class="empty-symbol" aria-hidden="true">○</span>
+              <h3>No upcoming renewals</h3>
+              <p>Future active renewals will appear here after a successful connector check.</p>
+            </div>
+          </section>
+
+          <section id="history" class="section-block" aria-labelledby="history-heading">
+            <div class="section-heading">
+              <div>
+                <p class="eyebrow">Audit trail</p>
+                <h2 id="history-heading">Subscription history</h2>
+              </div>
+              <span id="history-count" class="count-badge"></span>
+            </div>
+            <div class="history-layout">
+              <div id="history-list" class="history-list" aria-label="Subscription checks"></div>
+              <aside id="history-detail" class="history-detail" aria-live="polite">
+                <span class="detail-placeholder-icon" aria-hidden="true">↗</span>
+                <h3>Select a check</h3>
+                <p>Choose a history entry to inspect its normalized local details.</p>
+              </aside>
+            </div>
+            <div id="history-empty" class="empty-state" hidden>
+              <span class="empty-symbol" aria-hidden="true">—</span>
+              <h3>No check history yet</h3>
+              <p>Read-only connector outcomes will appear here after checks run.</p>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>

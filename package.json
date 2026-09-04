@@ -5,7 +5,7 @@
   "description": "A local-first subscription renewal tracker.",
   "type": "module",
   "scripts": {
-    "build": "tsc -p tsconfig.json",
+    "build": "tsc -p tsconfig.json && node scripts/copy-dashboard-assets.mjs",
     "check": "tsc -p tsconfig.json --noEmit",
     "dev": "node --import tsx src/cli.ts",
     "test": "vitest run"
