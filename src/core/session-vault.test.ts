@@ -39,7 +39,7 @@ const storageState = {
 const temporaryDirectories: string[] = [];
 
 async function temporaryDirectory(): Promise<string> {
-  const directory = await mkdtemp(join(tmpdir(), "subwatch-vault-test-"));
+  const directory = await mkdtemp(join(tmpdir(), "vaultscout-vault-test-"));
   temporaryDirectories.push(directory);
   return directory;
 }

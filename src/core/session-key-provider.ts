@@ -3,7 +3,7 @@ import { resolve } from "node:path";
 import { AsyncEntry } from "@napi-rs/keyring";
 
 const KEY_BYTES = 32;
-const SERVICE_NAME = "SubWatch Session Vault";
+const SERVICE_NAME = "VaultScout Session Vault";
 const pendingKeys = new Map<string, Promise<Buffer>>();
 
 export interface SessionKeyProvider {

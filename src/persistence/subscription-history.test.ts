@@ -45,7 +45,7 @@ const temporaryDirectories: string[] = [];
 const openRepositories: SubscriptionHistoryRepository[] = [];
 
 async function temporaryDirectory(): Promise<string> {
-  const directory = await mkdtemp(join(tmpdir(), "subwatch-history-test-"));
+  const directory = await mkdtemp(join(tmpdir(), "vaultscout-history-test-"));
   temporaryDirectories.push(directory);
   return directory;
 }

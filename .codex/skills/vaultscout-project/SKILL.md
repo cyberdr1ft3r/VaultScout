@@ -1,17 +1,18 @@
 ---
-name: subwatch-project
-description: Resume and manage development of the SubWatch repository, including durable project memory, GitHub Issues, task selection, handoffs, and implementation sequencing.
+name: vaultscout-project
+description: Resume and manage development of the VaultScout repository, including durable project memory, GitHub Issues, task selection, handoffs, and implementation sequencing.
 ---
 
-# SubWatch project workflow
+# VaultScout project workflow
 
-Read `AGENTS.md`, `docs/PROJECT_MEMORY.md`, and `docs/ROADMAP.md` before planning or editing.
+Read `AGENTS.md`, `docs/PROJECT_MEMORY.md`, `docs/ROADMAP.md`, and
+`docs/ARCHITECTURE.md` before planning or editing.
 
 For implementation work:
 
 1. Inspect open GitHub Issues and choose the requested issue or the earliest unblocked roadmap issue.
 2. Keep one primary issue in progress at a time.
-3. Implement only its acceptance criteria and preserve the security invariants in project memory.
+3. Implement only its acceptance criteria and preserve the security invariants in project memory and the architecture trust boundaries.
 4. Run type checking and relevant tests.
 5. Update project memory when status, architecture, constraints, or the recommended next task changes.
 6. Report the completed issue, verification results, and exact next issue.
@@ -19,3 +20,8 @@ For implementation work:
 For new work, create a GitHub Issue with context, acceptance criteria, security considerations, and verification steps. Do not use project memory as a backlog.
 
 Do not copy credentials, cookies, invoices, or authenticated page content into issues, commits, fixtures, logs, or project memory. Use sanitized synthetic fixtures for connector tests.
+
+Reject tasks that would expose a secret to an AI caller, add a generic vault
+browser, accept a caller-selected credential domain, or mutate billing/account
+state. A credential backend must remain behind the trusted local broker and
+tests must use a fake backend.

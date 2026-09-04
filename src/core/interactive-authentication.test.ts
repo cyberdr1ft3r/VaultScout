@@ -106,7 +106,7 @@ describe("authenticateInteractively", () => {
   it(
     "captures a synthetic local-page login without accepting credentials",
     async () => {
-      const directory = await mkdtemp(join(tmpdir(), "subwatch-auth-test-"));
+      const directory = await mkdtemp(join(tmpdir(), "vaultscout-auth-test-"));
       const keyProvider: SessionKeyProvider = {
         async getKey() {
           return Buffer.alloc(32, 9);

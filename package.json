@@ -1,8 +1,8 @@
 {
-  "name": "subwatch",
+  "name": "vaultscout",
   "version": "0.1.0",
   "private": true,
-  "description": "A local-first subscription renewal tracker.",
+  "description": "A local-first, agent-safe subscription access broker.",
   "type": "module",
   "scripts": {
     "build": "tsc -p tsconfig.json",

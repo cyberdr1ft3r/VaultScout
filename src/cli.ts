@@ -7,7 +7,7 @@ import { formatSubscription } from "./core/subscription.js";
 const connectors = new Map([[demoConnector.id, demoConnector]]);
 const program = new Command();
 
-program.name("subwatch").description("Check subscription renewal details locally.");
+program.name("vaultscout").description("Check subscription renewal details locally.");
 
 program
   .command("check")
@@ -18,10 +18,10 @@ program
       throw new Error(`Unknown connector: ${provider}`);
     }
 
-    const dataDirectory = await prepareDataDirectory(process.env.SUBWATCH_DATA_DIR);
+    const dataDirectory = await prepareDataDirectory(process.env.VAULTSCOUT_DATA_DIR);
     const result = await connector.check({
       dataDirectory,
-      headless: process.env.SUBWATCH_HEADLESS !== "false",
+      headless: process.env.VAULTSCOUT_HEADLESS !== "false",
     });
 
     console.log(formatSubscription(result));
