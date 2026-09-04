@@ -697,6 +697,28 @@ describe("brokered synthetic subscription check", () => {
     });
     expect(JSON.stringify(response)).not.toContain(privateMessage);
   });
+
+  it("does not mask failure-history persistence errors with backend errors", async () => {
+    const persistence = {
+      async recordSuccessfulCheck() {
+        throw new Error("Synthetic persistence unavailable.");
+      },
+      async recordFailedCheck() {
+        throw new Error("Synthetic persistence unavailable.");
+      },
+    } as unknown as SubscriptionHistoryRepository;
+    const values = await setup({
+      persistence,
+      backendFailure: "AUTHORIZATION_DENIED",
+    });
+
+    await expect(
+      values.broker.checkSubscription(request()),
+    ).resolves.toEqual({
+      outcome: "failed",
+      failureCode: "PERSISTENCE_FAILED",
+    });
+  });
 });
 
 describe("exact-origin controlled browser", () => {

@@ -297,13 +297,18 @@ class DomainBoundCredentialBroker implements CredentialBroker {
     const context = new BoundSubscriptionCheckContext(binding, backend);
     try {
       const untrustedResult = await this.#executor.execute(context);
-      if (context.credentialFailure) {
-        return failure(context.credentialFailure);
-      }
-
       const result = executorResultSchema.safeParse(untrustedResult);
       if (!result.success) {
-        return failure("CHECK_FAILED");
+        return failure(context.credentialFailure ?? "CHECK_FAILED");
+      }
+      if (
+        result.data.outcome === "failed" &&
+        result.data.failureCode === "PERSISTENCE_FAILED"
+      ) {
+        return failure("PERSISTENCE_FAILED");
+      }
+      if (context.credentialFailure) {
+        return failure(context.credentialFailure);
       }
       if (result.data.outcome === "failed") {
         return failure(result.data.failureCode);
