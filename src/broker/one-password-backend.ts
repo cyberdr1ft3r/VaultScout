@@ -268,6 +268,9 @@ export class OnePasswordCredentialBackend implements CredentialBackend {
       ) {
         throw new CredentialBackendFailure("OUTPUT_LIMIT_EXCEEDED");
       }
+      if (request.signal?.aborted) {
+        throw new CredentialBackendFailure("CANCELLED");
+      }
       if (!Number.isInteger(result.exitCode) || result.exitCode < 0) {
         throw new CredentialBackendFailure("PROCESS_FAILED");
       }

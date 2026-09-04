@@ -345,6 +345,36 @@ describe("OnePasswordCredentialBackend", () => {
     expect(runner.requests).toHaveLength(0);
   });
 
+  it("does not deliver output when cancellation wins after process exit", async () => {
+    const controller = new AbortController();
+    const runner: OnePasswordProcessRunner = {
+      async run() {
+        controller.abort();
+        return {
+          exitCode: 0,
+          stdout: Buffer.from(SYNTHETIC_PASSWORD),
+          stderr: Buffer.alloc(0),
+        };
+      },
+    };
+    const backend = new OnePasswordCredentialBackend(configuration(), {
+      runner,
+    });
+    let callbackCalled = false;
+
+    const failure = await backend
+      .usePassword(
+        request({ signal: controller.signal }),
+        async () => {
+          callbackCalled = true;
+        },
+      )
+      .catch((error: unknown) => error);
+
+    expect(backendFailureCode(failure)).toBe("CANCELLED");
+    expect(callbackCalled).toBe(false);
+  });
+
   it.each([
     { accountId: "--help" },
     { vaultId: "--help" },
