@@ -14,7 +14,7 @@ domain-bound, read-only login-and-check capability.
 - Repository: `cyberdr1ft3r/VaultScout`
 - Visibility: public
 - Runtime: Node.js 22+ and TypeScript
-- Implemented: domain-bound `check_subscription` broker with synthetic fake and production local 1Password backends, CLI and connector foundation, subscription validation, encrypted session vault, generic interactive Playwright authentication, sanitized offline connector fixture harness, local SQLite check history, demo connector
+- Implemented: end-to-end synthetic `check_subscription` flow, domain-bound broker with synthetic fake and production local 1Password backends, encrypted session reuse, controlled Playwright login, strict normalized extraction, SQLite outcomes, fixture harness, demo connector, and CLI foundation
 - Corrected product direction: VaultScout is an AI credential broker for subscription checks, not merely a renewal dashboard and not a password-manager replacement
 - Credential system of record: 1Password for the first vertical slice
 - Next milestone: one-credential, one-domain 1Password broker proof of concept with no agent-visible secret channel
@@ -31,6 +31,7 @@ domain-bound, read-only login-and-check capability.
 | Explicit credential-to-origin binding | Accepted | A stored item reference must not authorize use on caller-selected or redirected domains. |
 | Strict agent request and reconstructed response | Accepted | Runtime callers provide only account plus `check_subscription`; trusted item/origin/backend data and backend output never pass through. |
 | Desktop-integrated `op read` backend | Accepted | Retrieves one fixed account/vault/item/field through local 1Password authorization with no shell, enumeration, token, or agent-visible CLI surface. |
+| Exact-origin controlled browser | Accepted | Installs interception before page creation, disables service workers/frames, and permits only read requests plus one validated login POST. |
 | Provider-specific connectors | Accepted | Billing pages and extraction rules differ by provider. |
 | Encrypted browser sessions before credential retrieval | Accepted | Reduces password-manager access and repeated user prompts while preserving reauthentication. |
 | AES-256-GCM sessions with OS-keyring keys | Accepted | Keeps browser state encrypted at rest without a plaintext key fallback. |
@@ -52,6 +53,7 @@ domain-bound, read-only login-and-check capability.
 - Session state stays under `.vaultscout/` and must remain ignored by Git.
 - SQLite stores only normalized billing metadata, opaque account references, outcomes, and redacted failure codes under the configured data directory.
 - MFA and CAPTCHA require interactive user involvement and cannot be bypassed.
+- Connector output is reconstructed through a strict schema before persistence or agent return; raw connector objects never cross the broker boundary.
 - Connectors may only read billing information.
 - Generic secret retrieval, vault search/listing, payment, cancellation, and account mutation are out of scope.
 
@@ -62,9 +64,9 @@ At the start of a session, read this file and the open GitHub Issues. Select one
 ## Last handoff
 
 - Date: 2026-09-04
-- Completed: Issue #11 Windows-first local 1Password backend with fixed trusted identifiers, Windows Hello/desktop integration, bounded no-shell process execution, private CLI failure classification, cancellation, and callback-scoped output
-- Verification: strict TypeScript check and all 150 tests pass (37 adapter, 11 process-runner, 44 broker, plus all existing suites); diff check and production audit pass; the complete synthetic credential marker is absent from tracked files and captured test output
+- Completed: Issue #12 synthetic vertical slice covering trusted target resolution, session reuse/reauthentication, callback-scoped form fill, exact-origin browser enforcement, strict extraction, redacted responses, and SQLite outcomes
+- Verification: strict TypeScript check and all 191 tests pass (35 end-to-end synthetic tests plus all prior suites); 64 fixture/end-to-end tests pass with non-loopback proxies blocked; diff check and production audit pass; complete synthetic markers and committed runtime artifacts are absent
 - Deferred: the dashboard until an end-to-end brokered subscription check exists
-- Limitations: no browser-filling flow; JavaScript cannot guarantee secure memory zeroing; trusted configuration is programmatic; CLI stderr has no stable condition-specific exit-code contract; no user-approved Windows smoke test was performed
-- Resume with exactly: Issue #12, implement the brokered synthetic subscription check and controlled browser-filling flow
-- Blocked on: user-present Windows 11 smoke validation of the local 1Password authorization prompt; real provider selection comes after Issue #12
+- Limitations: only the fixed synthetic form/connector is supported; MFA/CAPTCHA stop rather than resume; JavaScript cannot guarantee secure memory zeroing; trusted configuration remains programmatic; no real 1Password/browser check was performed
+- Resume with exactly: Issue #13, select and implement the first real read-only subscription connector using hand-written synthetic fixtures
+- Blocked on: user selecting the first real provider and user-present Windows 11 validation before any real credential is used

@@ -73,7 +73,11 @@ tokens, storage state, authenticated HTML, or lower-level exception text.
 
 ## Scope
 
-The vault provides generic interactive authentication and session reuse for
-future connectors. It does not automate password or MFA entry, bypass CAPTCHA,
-implement a provider connector, or expose payment, cancellation, or
-subscription-modification actions.
+The vault now supports the Issue #12 synthetic brokered check: a valid session
+is tried before credential access, while missing, expired, or explicitly
+invalidated sessions use the trusted callback-scoped synthetic login and save
+new encrypted state. Corrupt sessions fail closed. The vault never exposes
+storage state through the agent response.
+
+This does not implement a real provider connector, automate MFA, bypass
+CAPTCHA, or expose payment, cancellation, or subscription-modification actions.

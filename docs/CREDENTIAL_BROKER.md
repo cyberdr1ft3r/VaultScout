@@ -47,8 +47,10 @@ messages and additional response properties are discarded.
 
 Issue #10 provides the contract and synthetic fake backend. Issue #11 adds the
 production `one_password` backend using the signed local CLI and desktop-app
-authorization. The controlled browser-filling vertical slice remains Issue
-#12. See [the 1Password integration guide](ONE_PASSWORD.md).
+authorization. Issue #12 adds the controlled synthetic browser-filling,
+session-reuse, extraction, and persistence vertical slice. See the
+[1Password integration guide](ONE_PASSWORD.md) and
+[synthetic check design](SYNTHETIC_CHECK.md).
 
 ## Secret lifetime limitation
 

@@ -45,6 +45,13 @@ MFA and CAPTCHA are explicit user-interaction boundaries. VaultScout may pause
 and resume around them, but it must never attempt a bypass or ask an agent to
 handle a recovery secret.
 
+The controlled browser installs request interception before creating a page,
+disables service workers, rejects child frames and popups, and restricts
+traffic to the credential binding's exact origin. Only GET/HEAD and one
+validated POST to the provider's fixed login action are allowed. Origin and form action are
+rechecked before credential retrieval, filling, submission, session capture,
+and connector extraction. See [the synthetic check design](docs/SYNTHETIC_CHECK.md).
+
 ## Reporting a problem
 
 Do not include credentials, cookies, tokens, invoices, or personal billing details in a public issue. Describe the affected connector and the observable behavior with sanitized data.

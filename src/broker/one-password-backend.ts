@@ -295,7 +295,10 @@ export class OnePasswordCredentialBackend implements CredentialBackend {
 
       try {
         await consume(password);
-      } catch {
+      } catch (error) {
+        if (error instanceof CredentialBackendFailure) {
+          throw error;
+        }
         throw new CredentialBackendFailure("CONSUMER_FAILED");
       }
     } finally {

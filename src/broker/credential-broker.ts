@@ -1,5 +1,6 @@
 import { z } from "zod";
 import type { OpaqueAccountReference } from "../persistence/subscription-history.js";
+import type { Subscription } from "../core/subscription.js";
 import type {
   CredentialBackend,
   EphemeralPasswordConsumer,
@@ -22,6 +23,14 @@ export type BrokerFailureCode =
   | "CREDENTIAL_UNAVAILABLE"
   | "ORIGIN_MISMATCH"
   | "REQUEST_CANCELLED"
+  | "SESSION_MISSING"
+  | "SESSION_EXPIRED"
+  | "SESSION_CORRUPT"
+  | "REAUTHENTICATION_REQUIRED"
+  | "INTERACTIVE_REQUIRED"
+  | "LOGIN_FAILED"
+  | "EXTRACTION_FAILED"
+  | "PERSISTENCE_FAILED"
   | "CHECK_FAILED";
 
 export interface CheckSubscriptionRequest {
@@ -34,6 +43,7 @@ export type CheckSubscriptionResponse =
       outcome: "completed";
       accountReference: OpaqueAccountReference;
       capability: typeof CHECK_SUBSCRIPTION_CAPABILITY;
+      subscription?: Subscription;
     }
   | { outcome: "failed"; failureCode: BrokerFailureCode };
 
@@ -58,8 +68,21 @@ export interface TrustedSubscriptionCheckContext {
 }
 
 export type TrustedSubscriptionCheckResult =
-  | { outcome: "completed" }
-  | { outcome: "failed"; failureCode: "CHECK_FAILED" };
+  | { outcome: "completed"; subscription?: unknown }
+  | {
+      outcome: "failed";
+      failureCode:
+        | "SESSION_MISSING"
+        | "SESSION_EXPIRED"
+        | "SESSION_CORRUPT"
+        | "REAUTHENTICATION_REQUIRED"
+        | "INTERACTIVE_REQUIRED"
+        | "LOGIN_FAILED"
+        | "ORIGIN_MISMATCH"
+        | "EXTRACTION_FAILED"
+        | "PERSISTENCE_FAILED"
+        | "CHECK_FAILED";
+    };
 
 /**
  * Trusted local integration point for the controlled browser/check flow.
@@ -95,12 +118,45 @@ const requestSchema = z
     capability: z.literal(CHECK_SUBSCRIPTION_CAPABILITY),
   })
   .strict();
-const executorResultSchema = z.discriminatedUnion("outcome", [
+const normalizedSubscriptionSchema = z
+  .object({
+    providerId: z.string().min(1).max(64),
+    providerName: z.string().min(1).max(100),
+    planName: z.string().min(1).max(200),
+    renewalDate: z.iso.date(),
+    amountMinor: z.number().int().nonnegative().safe(),
+    currency: z.string().regex(/^[A-Z]{3}$/u),
+    billingCycle: z.enum(["monthly", "quarterly", "yearly", "unknown"]),
+    status: z.enum(["active", "trial", "past_due", "cancelled", "unknown"]),
+    checkedAt: z
+      .string()
+      .regex(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/u),
+  })
+  .strict();
+const executorFailureCodes = [
+  "SESSION_MISSING",
+  "SESSION_EXPIRED",
+  "SESSION_CORRUPT",
+  "REAUTHENTICATION_REQUIRED",
+  "INTERACTIVE_REQUIRED",
+  "LOGIN_FAILED",
+  "ORIGIN_MISMATCH",
+  "EXTRACTION_FAILED",
+  "PERSISTENCE_FAILED",
+  "CHECK_FAILED",
+] as const;
+const executorResultSchema = z.union([
+  z
+    .object({
+      outcome: z.literal("completed"),
+      subscription: normalizedSubscriptionSchema,
+    })
+    .strict(),
   z.object({ outcome: z.literal("completed") }).strict(),
   z
     .object({
       outcome: z.literal("failed"),
-      failureCode: z.literal("CHECK_FAILED"),
+      failureCode: z.enum(executorFailureCodes),
     })
     .strict(),
 ]);
@@ -112,8 +168,9 @@ function failure(failureCode: BrokerFailureCode): CheckSubscriptionResponse {
 function mapBackendFailure(error: CredentialBackendFailure): BrokerFailureCode {
   switch (error.code) {
     case "AUTHORIZATION_DENIED":
-    case "BACKEND_LOCKED":
       return "AUTHORIZATION_DENIED";
+    case "BACKEND_LOCKED":
+      return "INTERACTIVE_REQUIRED";
     case "ORIGIN_MISMATCH":
       return "ORIGIN_MISMATCH";
     case "BACKEND_UNAVAILABLE":
@@ -130,7 +187,7 @@ function mapBackendFailure(error: CredentialBackendFailure): BrokerFailureCode {
     case "CANCELLED":
       return "REQUEST_CANCELLED";
     case "CONSUMER_FAILED":
-      return "CHECK_FAILED";
+      return "LOGIN_FAILED";
   }
 }
 
@@ -240,20 +297,34 @@ class DomainBoundCredentialBroker implements CredentialBroker {
     const context = new BoundSubscriptionCheckContext(binding, backend);
     try {
       const untrustedResult = await this.#executor.execute(context);
+      const result = executorResultSchema.safeParse(untrustedResult);
+      if (!result.success) {
+        return failure(context.credentialFailure ?? "CHECK_FAILED");
+      }
+      if (
+        result.data.outcome === "failed" &&
+        result.data.failureCode === "PERSISTENCE_FAILED"
+      ) {
+        return failure("PERSISTENCE_FAILED");
+      }
       if (context.credentialFailure) {
         return failure(context.credentialFailure);
       }
-
-      const result = executorResultSchema.safeParse(untrustedResult);
-      if (!result.success || result.data.outcome === "failed") {
-        return failure("CHECK_FAILED");
+      if (result.data.outcome === "failed") {
+        return failure(result.data.failureCode);
       }
 
-      return Object.freeze({
+      const completed = {
         outcome: "completed",
         accountReference: binding.accountReference,
         capability: CHECK_SUBSCRIPTION_CAPABILITY,
-      });
+      } as const;
+      return "subscription" in result.data
+        ? Object.freeze({
+            ...completed,
+            subscription: result.data.subscription,
+          })
+        : Object.freeze(completed);
     } catch {
       return failure(context.credentialFailure ?? "CHECK_FAILED");
     }
