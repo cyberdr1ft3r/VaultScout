@@ -12,6 +12,15 @@ Reusable browser state is encrypted with an OS-keyring-backed key. See
 [the session vault security design](docs/SESSION_VAULT.md) for platform
 behavior and limitations.
 
+## Dashboard rules
+
+The dashboard is a read-only local view and must bind to loopback unless the
+user explicitly accepts non-loopback exposure. Keep Host validation, the
+asset allowlist, restrictive Content-Security-Policy, no-store responses, and
+redacted API errors intact. Do not add CORS, remote assets, analytics,
+connector execution, credential entry, or billing mutation controls. See the
+[dashboard guide](docs/DASHBOARD.md).
+
 ## Reporting a problem
 
 Do not include credentials, cookies, tokens, invoices, or personal billing details in a public issue. Describe the affected connector and the observable behavior with sanitized data.

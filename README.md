@@ -15,7 +15,8 @@ SubWatch is a local-first tool that checks subscription billing pages and collec
 The foundation includes a typed connector contract, a secure encrypted session
 vault, generic interactive Playwright authentication, a sanitized offline
 connector fixture harness, local SQLite subscription history, a demo connector,
-and a CLI. No real provider connector is implemented yet.
+the local renewal dashboard, and a CLI. No real provider connector is
+implemented yet.
 
 The session vault stores its encryption key in Windows Credential Manager,
 macOS Keychain, or Linux Secret Service and fails closed if that store is
@@ -40,10 +41,20 @@ Expected output:
 Demo Cloud: renews 2026-10-01 — 9.99 EUR (active)
 ```
 
+Start the read-only dashboard on IPv4 loopback:
+
+```bash
+npm run dev -- dashboard
+```
+
+Then open `http://127.0.0.1:4173`. See the
+[dashboard guide](docs/DASHBOARD.md) for alternate ports, security headers,
+and the explicit warning required for non-loopback binding.
+
 ## Planned MVP
 
 1. Connectors for the first three real subscription providers
 2. Expiry warnings and failed-check reporting
-3. Local dashboard and reminder export
+3. Reminder export and scheduled local checks
 
 See [SECURITY.md](SECURITY.md) before adding a connector.
