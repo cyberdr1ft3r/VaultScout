@@ -66,11 +66,14 @@ type LoginMode =
   | "normal"
   | "redirect_before"
   | "cross_form"
+  | "sibling_form"
   | "scheme_form"
+  | "unsafe_scheme"
   | "port_form"
   | "unsafe_iframe"
   | "mfa"
-  | "captcha";
+  | "captcha"
+  | "confirmation";
 type SubmitMode =
   | "success"
   | "login_failure"
@@ -147,7 +150,11 @@ async function startSyntheticServer(
           redirect(response, `${alternateOrigin}/login`);
           return;
         }
-        if (mode === "mfa" || mode === "captcha") {
+        if (
+          mode === "mfa" ||
+          mode === "captcha" ||
+          mode === "confirmation"
+        ) {
           sendHtml(
             response,
             `<main data-vaultscout-interactive="${mode}">Synthetic interaction required</main>`,
@@ -158,11 +165,15 @@ async function startSyntheticServer(
         const action =
           mode === "cross_form"
             ? `${alternateOrigin}/session`
-            : mode === "scheme_form"
-              ? `https://127.0.0.1:${port}/session`
-              : mode === "port_form"
-                ? `http://127.0.0.1:${port + 1}/session`
-                : `${origin}/session`;
+            : mode === "sibling_form"
+              ? `http://sibling.localhost:${port}/session`
+              : mode === "scheme_form"
+                ? `https://127.0.0.1:${port}/session`
+                : mode === "unsafe_scheme"
+                  ? "data:text/plain,blocked"
+                  : mode === "port_form"
+                    ? `http://127.0.0.1:${port + 1}/session`
+                    : `${origin}/session`;
         const frame =
           mode === "unsafe_iframe"
             ? '<iframe src="/synthetic-frame"></iframe>'
@@ -698,7 +709,9 @@ describe("exact-origin controlled browser", () => {
 
   it.each([
     ["cross_form", "sibling hostname"],
+    ["sibling_form", "sibling subdomain"],
     ["scheme_form", "scheme"],
+    ["unsafe_scheme", "unsafe scheme"],
     ["port_form", "port"],
   ] as const)("rejects %s mismatch in login form action", async (
     login,
@@ -758,7 +771,7 @@ describe("exact-origin controlled browser", () => {
     expect(values.syntheticServer.serviceWorkerRequests).toBe(0);
   });
 
-  it.each(["mfa", "captcha"] as const)(
+  it.each(["mfa", "captcha", "confirmation"] as const)(
     "returns interactive-required for %s without solving it",
     async (login) => {
       const values = await setup({ server: { login } });
@@ -774,6 +787,21 @@ describe("exact-origin controlled browser", () => {
         outcome: "reauthentication_required",
         failureCode: "AUTHENTICATION_REQUIRED",
       });
+    },
+  );
+
+  it.each(["mfa", "captcha"] as const)(
+    "stops at post-login %s without automating it",
+    async (submit) => {
+      const values = await setup({ server: { submit } });
+
+      await expect(
+        values.broker.checkSubscription(request()),
+      ).resolves.toEqual({
+        outcome: "failed",
+        failureCode: "INTERACTIVE_REQUIRED",
+      });
+      expect(values.backend.safeSnapshot().useAttempts).toBe(1);
     },
   );
 

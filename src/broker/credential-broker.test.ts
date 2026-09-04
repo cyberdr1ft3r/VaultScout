@@ -238,6 +238,12 @@ describe("domain-bound credential broker", () => {
     { itemReference },
     { backendKind: "synthetic_fake" },
     { password: SYNTHETIC_PASSWORD },
+    { providerId: "synthetic-cloud" },
+    { url: allowedOrigin },
+    { connector: "synthetic-cloud" },
+    { selector: "synthetic-selector" },
+    { navigation: "/billing" },
+    { browserActions: ["click"] },
   ])("denies caller-selected authority or capability", async (override) => {
     const backend = fakeBackend();
     const broker = createCredentialBroker({
