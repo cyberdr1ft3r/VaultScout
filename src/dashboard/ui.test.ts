@@ -169,7 +169,11 @@ describe("local dashboard UI", () => {
       page.locator("#history-detail"),
       "Synthetic North",
     );
-    await page.locator(".history-item").last().click();
+    await page
+      .locator(".history-item")
+      .filter({ hasText: "Synthetic Orbit" })
+      .last()
+      .click();
     await expectContainsText(
       page.locator("#history-detail"),
       "Fixture Standard",
