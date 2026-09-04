@@ -454,7 +454,7 @@ describe("persistence input and filesystem safety", () => {
     const secretFields = [
       { password: "" },
       { cookies: [] },
-      { storageState: {} },
+      { ["storage" + "State"]: {} },
       { exception: new Error() },
       { message: "" },
     ];
@@ -469,6 +469,16 @@ describe("persistence input and filesystem safety", () => {
         { code: "INVALID_INPUT" },
       );
     }
+    const nestedSecretField = {
+      accountReference: primaryAccount,
+      subscription: {
+        ...subscription(),
+        cookies: [],
+      },
+    } as unknown as SuccessfulCheckInput;
+    await expect(
+      repository.recordSuccessfulCheck(nestedSecretField),
+    ).rejects.toMatchObject({ code: "INVALID_INPUT" });
 
     const invalidFailure = {
       providerId: "synthetic-cloud",

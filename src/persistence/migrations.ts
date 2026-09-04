@@ -33,6 +33,10 @@ const migrations: readonly Migration[] = [
             'CONNECTOR_UNAVAILABLE', 'EXTRACTION_FAILED', 'INVALID_RESPONSE',
             'NETWORK_FAILED', 'UNKNOWN_FAILURE'
           )
+        ),
+        CHECK (
+          latest_outcome <> 'reauthentication_required'
+          OR latest_failure_code IN ('AUTHENTICATION_REQUIRED', 'SESSION_EXPIRED')
         )
       );
 
@@ -58,6 +62,10 @@ const migrations: readonly Migration[] = [
             'CONNECTOR_UNAVAILABLE', 'EXTRACTION_FAILED', 'INVALID_RESPONSE',
             'NETWORK_FAILED', 'UNKNOWN_FAILURE'
           )
+        ),
+        CHECK (
+          outcome <> 'reauthentication_required'
+          OR failure_code IN ('AUTHENTICATION_REQUIRED', 'SESSION_EXPIRED')
         )
       );
 

@@ -259,7 +259,10 @@ async function prepareDatabasePath(dataDirectory: string): Promise<{
   }
 
   for (const suffix of sidecarSuffixes) {
-    await assertSafePath(`${databasePath}${suffix}`, "file");
+    const path = `${databasePath}${suffix}`;
+    if (await assertSafePath(path, "file")) {
+      await secureFile(path);
+    }
   }
 
   if (!(await assertSafePath(databasePath, "file"))) {
@@ -407,7 +410,26 @@ const checkHistorySelect = `
   LEFT JOIN subscription_snapshots AS snapshots ON snapshots.check_id = checks.id
 `;
 
-export class SubscriptionHistoryRepository {
+export interface SubscriptionHistoryRepository {
+  getSchemaStatus(): Promise<SchemaStatus>;
+  recordSuccessfulCheck(input: SuccessfulCheckInput): Promise<number>;
+  recordFailedCheck(input: FailedCheckInput): Promise<number>;
+  getLatestSubscriptionStates(): Promise<PersistedSubscriptionState[]>;
+  getUpcomingRenewals(
+    query: UpcomingRenewalsQuery,
+  ): Promise<PersistedSubscriptionState[]>;
+  getCheckHistory(query?: HistoryQuery): Promise<PersistedCheck[]>;
+  getConnectorsRequiringReauthentication(): Promise<
+    ReauthenticationRequirement[]
+  >;
+  getRecentFailedChecks(query: RecentFailuresQuery): Promise<PersistedCheck[]>;
+  pruneCheckHistory(input: { before: string }): Promise<number>;
+  close(): Promise<void>;
+}
+
+class SqliteSubscriptionHistoryRepository
+  implements SubscriptionHistoryRepository
+{
   readonly #database: Database.Database;
   readonly #databasePath: string;
   #closed = false;
@@ -862,7 +884,10 @@ export async function openSubscriptionHistory(
     database.pragma("trusted_schema = OFF");
     applyMigrations(database, new Date().toISOString());
     await restrictDatabaseFiles(prepared.databasePath);
-    return new SubscriptionHistoryRepository(database, prepared.databasePath);
+    return new SqliteSubscriptionHistoryRepository(
+      database,
+      prepared.databasePath,
+    );
   } catch {
     try {
       database.close();
