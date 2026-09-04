@@ -295,7 +295,7 @@ describe("domain-bound credential broker", () => {
         throw new Error(SYNTHETIC_PASSWORD);
       },
       capability: CHECK_SUBSCRIPTION_CAPABILITY,
-    } as CheckSubscriptionRequest;
+    } as unknown as CheckSubscriptionRequest;
 
     const response = await broker.checkSubscription(hostileRequest);
     expect(response).toEqual({
