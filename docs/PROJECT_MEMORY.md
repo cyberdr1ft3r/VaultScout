@@ -62,7 +62,7 @@ At the start of a session, read this file and the open GitHub Issues. Select one
 
 - Date: 2026-09-04
 - Completed: Issue #10 validated credential bindings, exact-origin policy, single-capability authorization, narrow callback-scoped backend interface, redacted broker responses, and synthetic fake backend
-- Verification: pending strict type check, complete tests, diff check, and tracked/test-output synthetic marker scans
+- Verification: strict TypeScript check and all 93 tests pass (35 broker tests plus all existing suites); diff check passes; the complete synthetic password marker is absent from tracked files and captured test output
 - Deferred: the dashboard until an end-to-end brokered subscription check exists
 - Limitations: no real 1Password adapter or browser-filling flow; JavaScript cannot guarantee secure memory zeroing; trusted configuration is currently supplied programmatically and is not persisted
 - Resume with exactly: Issue #11, implement the supported local 1Password credential adapter behind `CredentialBackend`
