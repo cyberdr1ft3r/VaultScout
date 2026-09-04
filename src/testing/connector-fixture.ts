@@ -70,8 +70,11 @@ export class FixtureHarnessError extends Error {
 
 const forbiddenContentPatterns: RegExp[] = [
   /<!--/iu,
-  /<(?:script|iframe|form|input|object|embed|link|img|audio|video)\b/iu,
+  /<(?:script|iframe|form|input|object|embed|link|img|audio|video|base|meta|style|svg|image|source|track)\b/iu,
   /\son[a-z]+\s*=/iu,
+  /\b(?:src|href|action|formaction|poster|style)\s*=/iu,
+  /\burl\s*\(/iu,
+  /&(?:#\d+|#x[0-9a-f]+|[a-z]+);/iu,
   /\b(?:https?:)?\/\//iu,
   /\b(?:account|authenticated|authorization|bearer|cookie|credential|invoice|password|secret|storage[\s_-]*state|token)\b/iu,
   /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/iu,
@@ -86,9 +89,10 @@ const forbiddenPropertyPattern =
   /"(?:authorization|cookies?|credentials?|headers?|password|storageState|tokens?)"\s*:/iu;
 
 function rejectUnsafeFixtureContent(serialized: string, html: string): void {
+  const normalized = serialized.normalize("NFKC").replace(/\p{Cf}/gu, "");
   if (
-    forbiddenPropertyPattern.test(serialized) ||
-    forbiddenContentPatterns.some((pattern) => pattern.test(serialized)) ||
+    forbiddenPropertyPattern.test(normalized) ||
+    forbiddenContentPatterns.some((pattern) => pattern.test(normalized)) ||
     !/<[a-z][^>]*\bdata-subwatch-fixture=(?:"synthetic"|'synthetic')[^>]*>/iu.test(
       html,
     )

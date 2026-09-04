@@ -15,7 +15,8 @@ Before committing a fixture, confirm every item:
 - [ ] The markup was written by hand and has
       `data-subwatch-fixture="synthetic"` on its root element.
 - [ ] The markup contains no scripts, forms, external resources, event
-      handlers, comments copied from a page, or hidden page data.
+      handlers, resource-bearing attributes, styles, encoded HTML entities,
+      comments copied from a page, or hidden page data.
 - [ ] The fixture contains no account identifier, email address, invoice,
       cookie, token, authorization value, browser storage, password, MFA value,
       credential, payment-card number, or authenticated HTML.

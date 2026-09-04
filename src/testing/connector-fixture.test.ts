@@ -262,6 +262,14 @@ describe("fixture sanitization", () => {
     },
     {
       ...minimalFixture,
+      html: '<main data-subwatch-fixture="synthetic" style="background: url(/asset)">Safe content</main>',
+    },
+    {
+      ...minimalFixture,
+      description: "Encoded contact&#64;example.invalid",
+    },
+    {
+      ...minimalFixture,
       html: "<main>Missing synthetic marker</main>",
     },
   ])("rejects unsafe or non-synthetic fixture content", (candidate) => {
