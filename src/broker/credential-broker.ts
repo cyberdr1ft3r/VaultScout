@@ -196,7 +196,12 @@ class DomainBoundCredentialBroker implements CredentialBroker {
   async checkSubscription(
     request: CheckSubscriptionRequest,
   ): Promise<CheckSubscriptionResponse> {
-    const parsedRequest = requestSchema.safeParse(request);
+    let parsedRequest: z.SafeParseResult<z.infer<typeof requestSchema>>;
+    try {
+      parsedRequest = requestSchema.safeParse(request);
+    } catch {
+      return failure("REQUEST_DENIED");
+    }
     if (!parsedRequest.success) {
       return failure("REQUEST_DENIED");
     }

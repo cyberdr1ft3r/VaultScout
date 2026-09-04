@@ -141,6 +141,27 @@ describe("credential binding validation", () => {
     );
   });
 
+  it("redacts exceptions thrown while reading binding properties", () => {
+    const hostileBinding = {
+      get accountReference() {
+        throw new Error(SYNTHETIC_PASSWORD);
+      },
+      backendKind: "synthetic_fake",
+      itemReference,
+      allowedOrigin,
+    };
+
+    const failure = (() => {
+      try {
+        validateCredentialBinding(hostileBinding);
+      } catch (error) {
+        return error;
+      }
+    })();
+    expect(failure).toBeInstanceOf(CredentialBindingError);
+    expect(String(failure)).not.toContain(SYNTHETIC_PASSWORD);
+  });
+
   it("matches the observed URL only to the configured exact origin", () => {
     expect(
       originMatchesBinding(
@@ -257,6 +278,31 @@ describe("domain-bound credential broker", () => {
       outcome: "failed",
       failureCode: "BINDING_NOT_FOUND",
     });
+  });
+
+  it("redacts exceptions thrown while reading agent request properties", async () => {
+    const broker = createCredentialBroker({
+      bindings: [binding()],
+      backends: [fakeBackend()],
+      executor: {
+        async execute() {
+          return { outcome: "completed" };
+        },
+      },
+    });
+    const hostileRequest = {
+      get accountReference() {
+        throw new Error(SYNTHETIC_PASSWORD);
+      },
+      capability: CHECK_SUBSCRIPTION_CAPABILITY,
+    } as CheckSubscriptionRequest;
+
+    const response = await broker.checkSubscription(hostileRequest);
+    expect(response).toEqual({
+      outcome: "failed",
+      failureCode: "REQUEST_DENIED",
+    });
+    expect(JSON.stringify(response)).not.toContain(SYNTHETIC_PASSWORD);
   });
 
   it("refuses credential use before an exact origin match", async () => {

@@ -78,42 +78,50 @@ const credentialBindingSchema = z
   .strict();
 
 export function validateCredentialBinding(value: unknown): CredentialBinding {
-  const parsed = credentialBindingSchema.safeParse(value);
-  if (!parsed.success) {
+  try {
+    const parsed = credentialBindingSchema.safeParse(value);
+    if (!parsed.success) {
+      throw new CredentialBindingError();
+    }
+
+    const allowedOrigin = exactAllowedOrigin(parsed.data.allowedOrigin);
+    if (!allowedOrigin) {
+      throw new CredentialBindingError();
+    }
+
+    return Object.freeze({
+      accountReference:
+        parsed.data.accountReference as OpaqueAccountReference,
+      backendKind: parsed.data.backendKind,
+      itemReference:
+        parsed.data.itemReference as CredentialItemReference,
+      allowedOrigin,
+    });
+  } catch {
     throw new CredentialBindingError();
   }
-
-  const allowedOrigin = exactAllowedOrigin(parsed.data.allowedOrigin);
-  if (!allowedOrigin) {
-    throw new CredentialBindingError();
-  }
-
-  return Object.freeze({
-    accountReference:
-      parsed.data.accountReference as OpaqueAccountReference,
-    backendKind: parsed.data.backendKind,
-    itemReference:
-      parsed.data.itemReference as CredentialItemReference,
-    allowedOrigin,
-  });
 }
 
 export function validateCredentialBindings(
   value: unknown,
 ): readonly CredentialBinding[] {
-  if (!Array.isArray(value) || value.length === 0) {
+  try {
+    if (!Array.isArray(value) || value.length === 0) {
+      throw new CredentialBindingError();
+    }
+
+    const bindings = value.map(validateCredentialBinding);
+    if (
+      new Set(bindings.map((binding) => binding.accountReference)).size !==
+      bindings.length
+    ) {
+      throw new CredentialBindingError();
+    }
+
+    return Object.freeze(bindings);
+  } catch {
     throw new CredentialBindingError();
   }
-
-  const bindings = value.map(validateCredentialBinding);
-  if (
-    new Set(bindings.map((binding) => binding.accountReference)).size !==
-    bindings.length
-  ) {
-    throw new CredentialBindingError();
-  }
-
-  return Object.freeze(bindings);
 }
 
 export function originMatchesBinding(
