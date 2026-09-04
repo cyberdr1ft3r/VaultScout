@@ -14,13 +14,18 @@ SubWatch is a local-first tool that checks subscription billing pages and collec
 
 The foundation includes a typed connector contract, a secure encrypted session
 vault, generic interactive Playwright authentication, a sanitized offline
-connector fixture harness, a demo connector, and a CLI. No real provider
-connector is implemented yet.
+connector fixture harness, local SQLite subscription history, a demo connector,
+and a CLI. No real provider connector is implemented yet.
 
 The session vault stores its encryption key in Windows Credential Manager,
 macOS Keychain, or Linux Secret Service and fails closed if that store is
 unavailable. See [the session vault design](docs/SESSION_VAULT.md) for its
 format, permissions, lifecycle states, and platform limitations.
+
+Normalized connector outcomes and subscription snapshots remain in an
+owner-only SQLite database under the configured data directory. See the
+[persistence design](docs/PERSISTENCE.md) for its interface and retention
+behavior.
 
 ## Run locally
 
@@ -38,7 +43,7 @@ Demo Cloud: renews 2026-10-01 — 9.99 EUR (active)
 ## Planned MVP
 
 1. Connectors for the first three real subscription providers
-2. SQLite-backed history and expiry warnings
+2. Expiry warnings and failed-check reporting
 3. Local dashboard and reminder export
 
 See [SECURITY.md](SECURITY.md) before adding a connector.
