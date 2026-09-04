@@ -215,12 +215,11 @@ export async function withConnectorFixturePage<T>(
   let operationError: unknown;
   let operationFailed = false;
 
-  context.on("request", () => {
-    networkAttempted = true;
-  });
-  await context.route("**/*", (route) => route.abort("blockedbyclient"));
-
   try {
+    context.on("request", () => {
+      networkAttempted = true;
+    });
+    await context.route("**/*", (route) => route.abort("blockedbyclient"));
     const page = await context.newPage();
     await page.setContent(validated.html, { waitUntil: "domcontentloaded" });
     result = await operation(page);
