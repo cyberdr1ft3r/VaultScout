@@ -20,8 +20,8 @@ import {
 
 const DEFAULT_TIMEOUT_MS = 30_000;
 const DEFAULT_MAX_OUTPUT_BYTES = 8 * 1024;
-const onePasswordIdSchema = z.string().regex(/^[a-z0-9]{26}$/u);
-const fieldIdSchema = z.string().regex(/^[a-z0-9][a-z0-9_-]{0,63}$/u);
+const onePasswordIdSchema = z.string().regex(/^[A-Za-z0-9]{26}$/u);
+const fieldIdSchema = z.string().regex(/^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$/u);
 const onePasswordBackendSchema = z
   .object({
     accountId: onePasswordIdSchema,

@@ -136,6 +136,33 @@ describe("OnePasswordCredentialBackend", () => {
     expect(runner.result.stdout.every((byte) => byte === 0)).toBe(true);
   });
 
+  it("accepts documented mixed-case 26-character object IDs", async () => {
+    const runner = new MockProcessRunner();
+    const mixedAccountId = "Ac".repeat(13);
+    const mixedVaultId = "V1".repeat(13);
+    const mixedItemId = "It".repeat(13);
+    const backend = new OnePasswordCredentialBackend(
+      configuration({
+        accountId: mixedAccountId,
+        vaultId: mixedVaultId,
+        itemReference: `item_${mixedItemId}`,
+      }),
+      { runner },
+    );
+
+    await backend.usePassword(
+      request({
+        itemReference: `item_${mixedItemId}` as CredentialItemReference,
+      }),
+      async () => undefined,
+    );
+
+    expect(runner.requests[0]?.arguments).toContain(
+      `op://${mixedVaultId}/${mixedItemId}/${FIELD_ID}`,
+    );
+    expect(runner.requests[0]?.arguments).toContain(mixedAccountId);
+  });
+
   it.each([
     ["EXECUTABLE_UNAVAILABLE", "BACKEND_UNAVAILABLE"],
     ["PROCESS_TIMEOUT", "PROCESS_TIMEOUT"],
