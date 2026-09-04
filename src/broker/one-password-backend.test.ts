@@ -188,6 +188,7 @@ describe("OnePasswordCredentialBackend", () => {
 
   it.each([
     ["1Password app is locked", "BACKEND_LOCKED"],
+    ["You are not currently signed in.", "BACKEND_LOCKED"],
     ["authorization request denied", "AUTHORIZATION_DENIED"],
     ["the selected vault is not found", "VAULT_NOT_FOUND"],
     ["the selected item does not exist", "ITEM_NOT_FOUND"],

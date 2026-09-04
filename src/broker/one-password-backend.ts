@@ -186,10 +186,9 @@ function classifyCliFailure(stderr: Buffer): CredentialBackendFailure {
     return new CredentialBackendFailure("AUTHORIZATION_DENIED");
   }
   if (
-    /(?:app|account|1password).*(?:locked|not signed in)/u.test(
+    /\b(?:locked|not unlocked|not (?:currently )?signed in)\b/u.test(
       privateMessage,
-    ) ||
-    /(?:locked|not signed in).*(?:app|account|1password)/u.test(privateMessage)
+    )
   ) {
     return new CredentialBackendFailure("BACKEND_LOCKED");
   }
