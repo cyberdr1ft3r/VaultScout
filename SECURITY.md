@@ -24,6 +24,13 @@ The implemented policy and interface boundary is documented in
 cannot be reliably zeroed; VaultScout limits secret lifetime and visibility but
 does not claim secure in-memory erasure.
 
+The production 1Password backend uses only the signed local `op` CLI with
+desktop-app authorization, fixed trusted identifiers, an argument-array
+process, a minimal token-free environment, bounded output, and a timeout. It
+must never use service-account tokens, shell execution, vault enumeration,
+temporary secret files, or raw CLI diagnostics. See
+[the 1Password integration guide](docs/ONE_PASSWORD.md).
+
 ## Connector rules
 
 Connectors must remain read-only. They may navigate to billing pages and extract subscription metadata. They must not submit purchases, cancellations, plan changes, payment methods, passwords, recovery codes, or MFA values.

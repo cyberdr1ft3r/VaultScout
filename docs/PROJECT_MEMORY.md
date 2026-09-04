@@ -14,7 +14,7 @@ domain-bound, read-only login-and-check capability.
 - Repository: `cyberdr1ft3r/VaultScout`
 - Visibility: public
 - Runtime: Node.js 22+ and TypeScript
-- Implemented: domain-bound `check_subscription` broker contract with synthetic fake backend, CLI and connector foundation, subscription validation, encrypted session vault, generic interactive Playwright authentication, sanitized offline connector fixture harness, local SQLite check history, demo connector
+- Implemented: domain-bound `check_subscription` broker with synthetic fake and production local 1Password backends, CLI and connector foundation, subscription validation, encrypted session vault, generic interactive Playwright authentication, sanitized offline connector fixture harness, local SQLite check history, demo connector
 - Corrected product direction: VaultScout is an AI credential broker for subscription checks, not merely a renewal dashboard and not a password-manager replacement
 - Credential system of record: 1Password for the first vertical slice
 - Next milestone: one-credential, one-domain 1Password broker proof of concept with no agent-visible secret channel
@@ -30,6 +30,7 @@ domain-bound, read-only login-and-check capability.
 | Agent-safe broker boundary | Accepted | The AI may request an allowed login-and-check operation but may never request or receive a secret value. |
 | Explicit credential-to-origin binding | Accepted | A stored item reference must not authorize use on caller-selected or redirected domains. |
 | Strict agent request and reconstructed response | Accepted | Runtime callers provide only account plus `check_subscription`; trusted item/origin/backend data and backend output never pass through. |
+| Desktop-integrated `op read` backend | Accepted | Retrieves one fixed account/vault/item/field through local 1Password authorization with no shell, enumeration, token, or agent-visible CLI surface. |
 | Provider-specific connectors | Accepted | Billing pages and extraction rules differ by provider. |
 | Encrypted browser sessions before credential retrieval | Accepted | Reduces password-manager access and repeated user prompts while preserving reauthentication. |
 | AES-256-GCM sessions with OS-keyring keys | Accepted | Keeps browser state encrypted at rest without a plaintext key fallback. |
@@ -61,9 +62,9 @@ At the start of a session, read this file and the open GitHub Issues. Select one
 ## Last handoff
 
 - Date: 2026-09-04
-- Completed: Issue #10 validated credential bindings, exact-origin policy, single-capability authorization, narrow callback-scoped backend interface, redacted broker responses, and synthetic fake backend
-- Verification: strict TypeScript check and all 93 tests pass (35 broker tests plus all existing suites); diff check passes; the complete synthetic password marker is absent from tracked files and captured test output
+- Completed: Issue #11 Windows-first local 1Password backend with fixed trusted identifiers, Windows Hello/desktop integration, bounded no-shell process execution, private CLI failure classification, cancellation, and callback-scoped output
+- Verification: strict TypeScript check and all 150 tests pass (37 adapter, 11 process-runner, 44 broker, plus all existing suites); diff check and production audit pass; the complete synthetic credential marker is absent from tracked files and captured test output
 - Deferred: the dashboard until an end-to-end brokered subscription check exists
-- Limitations: no real 1Password adapter or browser-filling flow; JavaScript cannot guarantee secure memory zeroing; trusted configuration is currently supplied programmatically and is not persisted
-- Resume with exactly: Issue #11, implement the supported local 1Password credential adapter behind `CredentialBackend`
-- Blocked on: confirming the supported 1Password local integration during Issue #11; real provider selection comes after the synthetic vertical slice
+- Limitations: no browser-filling flow; JavaScript cannot guarantee secure memory zeroing; trusted configuration is programmatic; CLI stderr has no stable condition-specific exit-code contract; no user-approved Windows smoke test was performed
+- Resume with exactly: Issue #12, implement the brokered synthetic subscription check and controlled browser-filling flow
+- Blocked on: user-present Windows 11 smoke validation of the local 1Password authorization prompt; real provider selection comes after Issue #12
