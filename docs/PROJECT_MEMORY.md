@@ -65,7 +65,7 @@ At the start of a session, read this file and the open GitHub Issues. Select one
 
 - Date: 2026-09-04
 - Completed: Issue #12 synthetic vertical slice covering trusted target resolution, session reuse/reauthentication, callback-scoped form fill, exact-origin browser enforcement, strict extraction, redacted responses, and SQLite outcomes
-- Verification: pending type check, complete/offline tests, audit, diff check, and tracked/runtime artifact scans
+- Verification: strict TypeScript check and all 191 tests pass (35 end-to-end synthetic tests plus all prior suites); 64 fixture/end-to-end tests pass with non-loopback proxies blocked; diff check and production audit pass; complete synthetic markers and committed runtime artifacts are absent
 - Deferred: the dashboard until an end-to-end brokered subscription check exists
 - Limitations: only the fixed synthetic form/connector is supported; MFA/CAPTCHA stop rather than resume; JavaScript cannot guarantee secure memory zeroing; trusted configuration remains programmatic; no real 1Password/browser check was performed
 - Resume with exactly: Issue #13, select and implement the first real read-only subscription connector using hand-written synthetic fixtures
