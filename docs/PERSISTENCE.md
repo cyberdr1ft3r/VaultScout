@@ -1,7 +1,7 @@
 # Local subscription persistence
 
-SubWatch stores normalized connector results in
-`<configured-data-directory>/subwatch.sqlite3`. The database is local private
+VaultScout stores normalized connector results in
+`<configured-data-directory>/vaultscout.sqlite3`. The database is local private
 data: it must not be committed, copied into bug reports, or treated as a
 fixture.
 

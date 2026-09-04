@@ -93,7 +93,7 @@ function rejectUnsafeFixtureContent(serialized: string, html: string): void {
   if (
     forbiddenPropertyPattern.test(normalized) ||
     forbiddenContentPatterns.some((pattern) => pattern.test(normalized)) ||
-    !/<[a-z][^>]*\bdata-subwatch-fixture=(?:"synthetic"|'synthetic')[^>]*>/iu.test(
+    !/<[a-z][^>]*\bdata-vaultscout-fixture=(?:"synthetic"|'synthetic')[^>]*>/iu.test(
       html,
     )
   ) {

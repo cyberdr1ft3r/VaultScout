@@ -1,8 +1,8 @@
 # Session vault security design
 
-SubWatch stores reusable Playwright storage state without accepting or persisting
+VaultScout stores reusable Playwright storage state without accepting or persisting
 account passwords. Login happens in a headed provider page. After the connector
-confirms that login succeeded, SubWatch captures Playwright's cookies and web
+confirms that login succeeded, VaultScout captures Playwright's cookies and web
 storage and immediately encrypts them for later read-only checks.
 
 Provider login URLs must use HTTPS. Plaintext HTTP is accepted only when the
@@ -13,7 +13,7 @@ also rejected. Rejections use the same generic, redacted authentication error.
 
 ## Encryption and key storage
 
-- Each configured SubWatch data directory has a random 256-bit vault key.
+- Each configured VaultScout data directory has a random 256-bit vault key.
 - The key is stored as a generic secret named for a hash of the data-directory
   path. Session keys never have a plaintext file fallback.
 - Session payloads use AES-256-GCM with a new 96-bit nonce for every write.
@@ -31,9 +31,9 @@ The OS protects the vault key:
 | macOS | Login Keychain | Owner-only directories (`0700`) and files (`0600`) |
 | Linux | Secret Service collection, normally provided by GNOME Keyring or KWallet | Owner-only directories (`0700`) and files (`0600`) |
 
-SubWatch fails closed when the platform credential store is unavailable. In
+VaultScout fails closed when the platform credential store is unavailable. In
 particular, a headless Linux host must provide an unlocked Secret Service
-session; SubWatch does not write the vault key beside encrypted sessions.
+session; VaultScout does not write the vault key beside encrypted sessions.
 
 Encryption protects session contents from offline inspection or accidental
 backup disclosure when the OS credential store remains protected. It does not
@@ -45,14 +45,14 @@ provider page.
 All files stay under the path returned by `prepareDataDirectory`:
 
 ```text
-.subwatch/
+.vaultscout/
   sessions/
     <sha256-provider-id>/
       <sha256-account-id>/
         session.v1.enc
 ```
 
-Raw provider and account identifiers are not used as path components. SubWatch
+Raw provider and account identifiers are not used as path components. VaultScout
 rejects empty identifiers and symbolic links in the managed session hierarchy.
 Each write creates an exclusive owner-only temporary file, flushes it, renames
 it over the destination, reapplies restrictive permissions, and flushes the

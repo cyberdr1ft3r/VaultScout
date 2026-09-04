@@ -13,7 +13,7 @@ Before committing a fixture, confirm every item:
 - [ ] Every person, provider, plan, date, price, and status was invented for
       the fixture; no value was copied from an account or provider page.
 - [ ] The markup was written by hand and has
-      `data-subwatch-fixture="synthetic"` on its root element.
+      `data-vaultscout-fixture="synthetic"` on its root element.
 - [ ] The markup contains no scripts, forms, external resources, event
       handlers, resource-bearing attributes, styles, encoded HTML entities,
       comments copied from a page, or hidden page data.
@@ -34,7 +34,7 @@ document needed to exercise the connector's selectors and parsing behavior.
   "version": 1,
   "id": "synthetic-example",
   "description": "A hand-written deterministic billing summary.",
-  "html": "<main data-subwatch-fixture=\"synthetic\">...</main>",
+  "html": "<main data-vaultscout-fixture=\"synthetic\">...</main>",
   "expectation": {
     "outcome": "subscription",
     "subscription": {

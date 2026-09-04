@@ -236,7 +236,7 @@ describe("fixture sanitization", () => {
     version: 1,
     id: "synthetic-minimal",
     description: "A hand-written deterministic summary.",
-    html: '<main data-subwatch-fixture="synthetic">Safe content</main>',
+    html: '<main data-vaultscout-fixture="synthetic">Safe content</main>',
     expectation: {
       outcome: "error",
       code: "CONNECTOR_EXTRACTION_FAILED",
@@ -254,15 +254,15 @@ describe("fixture sanitization", () => {
     },
     {
       ...minimalFixture,
-      html: '<main data-subwatch-fixture="synthetic"><script></script></main>',
+      html: '<main data-vaultscout-fixture="synthetic"><script></script></main>',
     },
     {
       ...minimalFixture,
-      html: '<main data-subwatch-fixture="synthetic">http://example.invalid</main>',
+      html: '<main data-vaultscout-fixture="synthetic">http://example.invalid</main>',
     },
     {
       ...minimalFixture,
-      html: '<main data-subwatch-fixture="synthetic" style="background: url(/asset)">Safe content</main>',
+      html: '<main data-vaultscout-fixture="synthetic" style="background: url(/asset)">Safe content</main>',
     },
     {
       ...minimalFixture,
@@ -285,7 +285,7 @@ describe("fixture sanitization", () => {
   });
 
   it("rejects symbolic-link fixture files", async () => {
-    const directory = await mkdtemp(join(tmpdir(), "subwatch-fixtures-"));
+    const directory = await mkdtemp(join(tmpdir(), "vaultscout-fixtures-"));
     try {
       const { symlink } = await import("node:fs/promises");
       await symlink(

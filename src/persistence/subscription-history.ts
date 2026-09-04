@@ -7,7 +7,7 @@ import type { Subscription } from "../core/subscription.js";
 import { secureDirectory, secureFile } from "../core/secure-filesystem.js";
 import { applyMigrations, CURRENT_SCHEMA_VERSION } from "./migrations.js";
 
-export const SUBSCRIPTION_DATABASE_FILENAME = "subwatch.sqlite3";
+export const SUBSCRIPTION_DATABASE_FILENAME = "vaultscout.sqlite3";
 
 const sidecarSuffixes = ["", "-wal", "-shm", "-journal"] as const;
 const providerIdSchema = z
