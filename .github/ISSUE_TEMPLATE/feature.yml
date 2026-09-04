@@ -1,0 +1,32 @@
+name: Feature
+description: Plan an actionable SubWatch feature
+title: "feat: "
+body:
+  - type: textarea
+    id: outcome
+    attributes:
+      label: Outcome
+      description: What observable result should this issue deliver?
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      placeholder: "- [ ] Observable criterion"
+    validations:
+      required: true
+  - type: textarea
+    id: security
+    attributes:
+      label: Security considerations
+      description: Explain how secrets, session state, and read-only behavior are protected.
+    validations:
+      required: true
+  - type: textarea
+    id: verification
+    attributes:
+      label: Verification
+      placeholder: Commands, tests, or manual checks
+    validations:
+      required: true
